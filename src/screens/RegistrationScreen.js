@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Field, s } from '../components/DriverUI';
 import VehicleSelectionModal from '../components/VehicleSelectionModal';
+import BottomSheet from '../components/BottomSheet';
 import { useDriverStore } from '../state/useDriverStore';
 import { validateStep, normalizePhone, VEHICLES } from '../utils/registration';
 import { normalizeEmail } from '../utils/email';
@@ -15,6 +16,16 @@ export default function RegistrationScreen({ navigation }) {
   const [error, setError] = useState('');
   const [modal, setModal] = useState(!draft.vehicleType);
   const [done, setDone] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const verify = () => {
+    const invalid = [0, 1, 2].map(i => validateStep(i, draft)).find(Boolean);
+    if (invalid) { setError(invalid); setDone(false); setStep(3); return; }
+    setSuccess(true);
+  };
+  const openDashboard = () => {
+    setSuccess(false);
+    navigation.reset({ index: 0, routes: [{ name: 'DriverDashboard' }] });
+  };
   const vehicle = VEHICLES.find(v => v.id === draft.vehicleType);
   const back = () => { Keyboard.dismiss(); setError(''); if (done) setDone(false); else if (step > 0) setStep(step - 1); else navigation.goBack(); };
   useEffect(() => { const sub = BackHandler.addEventListener('hardwareBackPress', () => { if (step > 0 || done) { back(); return true; } return false; }); return () => sub.remove(); }, [step, done]);
@@ -47,7 +58,16 @@ export default function RegistrationScreen({ navigation }) {
       {done && <View style={{ backgroundColor: '#2C2C2E', borderRadius: 18, padding: 22, gap: 22 }}><Text style={s.label}>What comes next</Text>{['Verify your contact details', 'Provide your driver and vehicle documents', 'Complete your driver review'].map((text, i) => <View key={text} style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}><Text style={{ color: '#D4E903', fontWeight: '700' }}>0{i + 1}</Text><Text style={{ color: '#CDCDD0', flex: 1, lineHeight: 21 }}>{text}</Text></View>)}</View>}
       {!!error && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={{ color: '#FF9999', marginTop: 16, lineHeight: 21 }}>{error}</Text>}
     </ScrollView>
-    <View style={s.footer}><Button title={done ? 'Edit my details' : step === 3 ? 'Finish profile draft' : 'Continue'} onPress={done ? () => { setDone(false); setStep(3); } : next} /><Text style={s.note}>{done ? 'Draft kept for this session. No application has been submitted.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
+    <View style={s.footer}><Button title={done ? 'Verify details' : step === 3 ? 'Confirm my details' : 'Continue'} onPress={done ? verify : next} /><Text style={s.note}>{done ? 'Confirm your profile details to continue.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
+    <BottomSheet visible={success} onClose={() => setSuccess(false)} title="All set!">
+      <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+        <View style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: '#D4E903', justifyContent: 'center', alignItems: 'center', marginBottom: 24 }}><Ionicons name="checkmark" size={46} color="#01144E" /></View>
+        <Text style={[s.title, { textAlign: 'center' }]}>Details confirmed.</Text>
+        <Text style={[s.subtitle, { textAlign: 'center' }]}>Welcome aboard, {draft.name.split(' ')[0]}. Your driver dashboard is ready.</Text>
+      </View>
+      <Button title="Go to dashboard" onPress={openDashboard} />
+      <Text style={[s.note, { marginTop: 16 }]}>Profile check complete. Identity and document verification are still pending.</Text>
+    </BottomSheet>
     <VehicleSelectionModal visible={modal} selected={draft.vehicleType} onClose={() => setModal(false)} onSelect={vehicleType => { update({ vehicleType }); setModal(false); setError(''); }} />
   </KeyboardAvoidingView></SafeAreaView>;
 }
