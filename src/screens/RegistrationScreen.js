@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button, Field, s } from '../components/DriverUI';
 import VehicleSelectionModal from '../components/VehicleSelectionModal';
 import BottomSheet from '../components/BottomSheet';
-import SuccessTick from '../components/SuccessTick';
 import { useDriverStore } from '../state/useDriverStore';
 import { validateStep, normalizePhone, VEHICLES } from '../utils/registration';
 import { normalizeEmail } from '../utils/email';
@@ -41,7 +40,7 @@ export default function RegistrationScreen({ navigation }) {
   const edit = index => { setStep(index); setError(''); };
   const row = (label, value, index) => <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${label}`} onPress={() => edit(index)} style={{ paddingVertical: 19, borderBottomWidth: 1, borderBottomColor: '#3A3A3D', flexDirection: 'row', alignItems: 'center', gap: 14 }}><View style={{ flex: 1 }}><Text style={[s.note, { textAlign: 'left', marginBottom: 6 }]}>{label}</Text><Text style={[s.label, { fontSize: 17 }]}>{value}</Text></View><Ionicons name="pencil-outline" color="#D4E903" size={18} /></Pressable>;
   return <SafeAreaView style={s.page}><KeyboardAvoidingView style={s.frame} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-    <View style={s.header}><Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={back} style={{ padding: 10, marginLeft: -10 }}><Ionicons name="arrow-back" size={24} color="#fff" /></Pressable><Text style={s.brand}>Waybill <Text style={s.badge}>DRIVER</Text></Text><Text style={s.note}>{done ? 'Done' : `${step + 1} of 4`}</Text></View>
+    <View style={s.header}><Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={back} style={{ padding: 10, marginLeft: -10 }}><Ionicons name="arrow-back" size={24} color="#fff" /></Pressable><Text style={s.brand}>Waybill <Text style={s.badge}>DRIVER</Text></Text><Text style={s.note}>{done ? '' : `${step + 1} of 4`}</Text></View>
     <View style={{ flexDirection: 'row', gap: 6, paddingHorizontal: 24 }}>{[0, 1, 2, 3].map(i => <View key={i} style={{ flex: 1, height: 3, borderRadius: 3, backgroundColor: i <= step ? '#D4E903' : '#3A3A3D' }} />)}</View>
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 24, paddingTop: 32 }}>
       <View style={s.icon}><Ionicons name={done ? 'checkmark-outline' : ['call-outline', 'person-outline', vehicle?.icon || 'car-outline', 'clipboard-outline'][step]} size={30} color="#D4E903" /></View>
@@ -60,9 +59,9 @@ export default function RegistrationScreen({ navigation }) {
       {!!error && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={{ color: '#FF9999', marginTop: 16, lineHeight: 21 }}>{error}</Text>}
     </ScrollView>
     <View style={s.footer}><Button title={done ? 'Verify details' : step === 3 ? 'Confirm my details' : 'Continue'} onPress={done ? verify : next} /><Text style={s.note}>{done ? 'Confirm your profile details to continue.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
-    <BottomSheet visible={success} onClose={() => setSuccess(false)} title="All set!">
+    <BottomSheet visible={success} onClose={() => setSuccess(false)} showClose={false} showHandle={false}>
       <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-        <SuccessTick visible={success} />
+        <Text style={[s.badge, { marginTop: 16, marginBottom: 16 }]}>All set!</Text>
         <Text style={[s.title, { textAlign: 'center' }]}>Details confirmed.</Text>
         <Text style={[s.subtitle, { textAlign: 'center', marginBottom: 12 }]}>Welcome aboard, {draft.name.split(' ')[0]}.</Text>
       </View>

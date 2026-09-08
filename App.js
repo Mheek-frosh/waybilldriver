@@ -7,6 +7,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import RegistrationScreen from './src/screens/RegistrationScreen';
 import DriverDashboardScreen from './src/screens/DriverDashboardScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return <SafeAreaProvider><StatusBar style="light" /><NavigationContainer theme={DarkTheme}>
@@ -15,6 +16,7 @@ export default function App() {
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Registration" component={RegistrationScreen} />
       <Stack.Screen name="DriverDashboard" component={DriverDashboardScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
     </Stack.Navigator>
   </NavigationContainer></SafeAreaProvider>;
 }

@@ -4,14 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { s } from './DriverUI';
 
-export default function BottomSheet({ visible, onClose, title, children }) {
+export default function BottomSheet({ visible, onClose, title, children, showClose = true, showHandle = true }) {
   const insets = useSafeAreaInsets();
   return <Modal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
     <View style={styles.overlay}>
       <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel="Dismiss sheet" onPress={onClose} />
       <View accessibilityViewIsModal style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24) }]}>
-        <View style={styles.handle} />
-        <View style={styles.heading}><Text style={[s.label, { fontSize: 20, flex: 1 }]}>{title}</Text><Pressable accessibilityRole="button" accessibilityLabel="Close sheet" onPress={onClose} style={{ padding: 10 }}><Ionicons name="close" size={22} color="#fff" /></Pressable></View>
+        {showHandle && <View style={styles.handle} />}
+        {(title || showClose) && <View style={styles.heading}><Text style={[s.label, { fontSize: 20, flex: 1 }]}>{title}</Text>{showClose && <Pressable accessibilityRole="button" accessibilityLabel="Close sheet" onPress={onClose} style={{ padding: 10 }}><Ionicons name="close" size={22} color="#fff" /></Pressable>}</View>}
         <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>{children}</ScrollView>
       </View>
     </View>
