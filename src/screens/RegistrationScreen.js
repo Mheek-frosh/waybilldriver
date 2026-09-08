@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button, Field, s } from '../components/DriverUI';
 import VehicleSelectionModal from '../components/VehicleSelectionModal';
 import BottomSheet from '../components/BottomSheet';
+import SuccessTick from '../components/SuccessTick';
 import { useDriverStore } from '../state/useDriverStore';
 import { validateStep, normalizePhone, VEHICLES } from '../utils/registration';
 import { normalizeEmail } from '../utils/email';
@@ -61,12 +62,12 @@ export default function RegistrationScreen({ navigation }) {
     <View style={s.footer}><Button title={done ? 'Verify details' : step === 3 ? 'Confirm my details' : 'Continue'} onPress={done ? verify : next} /><Text style={s.note}>{done ? 'Confirm your profile details to continue.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
     <BottomSheet visible={success} onClose={() => setSuccess(false)} title="All set!">
       <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-        <View style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: '#D4E903', justifyContent: 'center', alignItems: 'center', marginBottom: 24 }}><Ionicons name="checkmark" size={46} color="#01144E" /></View>
+        <SuccessTick visible={success} />
         <Text style={[s.title, { textAlign: 'center' }]}>Details confirmed.</Text>
-        <Text style={[s.subtitle, { textAlign: 'center' }]}>Welcome aboard, {draft.name.split(' ')[0]}. Your driver dashboard is ready.</Text>
+        <Text style={[s.subtitle, { textAlign: 'center', marginBottom: 12 }]}>Welcome aboard, {draft.name.split(' ')[0]}.</Text>
       </View>
       <Button title="Go to dashboard" onPress={openDashboard} />
-      <Text style={[s.note, { marginTop: 16 }]}>Profile check complete. Identity and document verification are still pending.</Text>
+      <Text style={[s.note, { marginTop: 16 }]}>Identity verification pending.</Text>
     </BottomSheet>
     <VehicleSelectionModal visible={modal} selected={draft.vehicleType} onClose={() => setModal(false)} onSelect={vehicleType => { update({ vehicleType }); setModal(false); setError(''); }} />
   </KeyboardAvoidingView></SafeAreaView>;

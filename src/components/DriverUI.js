@@ -1,9 +1,8 @@
 import React from 'react';
 import { Text, View, Pressable, TextInput, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 export function Button({ title, onPress, secondary, disabled }) {
-  return <Pressable accessibilityRole="button" accessibilityState={{ disabled: !!disabled }} disabled={disabled} onPress={onPress} style={({ pressed }) => [s.button, secondary && s.secondary, { opacity: disabled ? .4 : pressed ? .75 : 1 }]}><Text style={[s.buttonText, secondary && { color: '#fff' }]}>{title}</Text><Ionicons name="arrow-forward" size={20} color={secondary ? '#fff' : colors.deepNavy} /></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityState={{ disabled: !!disabled }} disabled={disabled} onPress={onPress} style={({ pressed }) => [s.button, secondary && s.secondary, { opacity: disabled ? .4 : pressed ? .75 : 1 }]}><Text style={[s.buttonText, secondary && { color: '#fff' }]}>{title}</Text></Pressable>;
 }
 export function Field({ label, ...props }) { return <View style={{ gap: 10, marginBottom: 22 }}><Text style={s.label}>{label}</Text><TextInput accessibilityLabel={label} placeholderTextColor="#858589" style={s.input} selectionColor={colors.limeGreen} {...props} /></View>; }
 export const s = StyleSheet.create({
@@ -16,8 +15,8 @@ export const s = StyleSheet.create({
   subtitle: { color: '#AAAAB0', fontSize: 15, lineHeight: 23, marginBottom: 28 },
   label: { color: '#E8E8EA', fontSize: 14, fontWeight: '600' },
   input: { backgroundColor: '#2C2C2E', borderWidth: 1, borderColor: '#414144', borderRadius: 14, padding: 17, minHeight: 58, color: '#fff', fontSize: 17 },
-  button: { backgroundColor: colors.limeGreen, minHeight: 58, borderRadius: 14, padding: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  secondary: { backgroundColor: '#303033' }, buttonText: { color: colors.deepNavy, fontSize: 16, fontWeight: '700' },
+  button: { backgroundColor: colors.limeGreen, minHeight: 58, borderRadius: 14, padding: 18, justifyContent: 'center', alignItems: 'center' },
+  secondary: { backgroundColor: '#303033' }, buttonText: { color: colors.deepNavy, fontSize: 16, fontWeight: '700', textAlign: 'center' },
   footer: { padding: 24, gap: 12 }, note: { color: '#AAAAB0', fontSize: 12, lineHeight: 18, textAlign: 'center' },
   icon: { backgroundColor: '#303423', width: 64, height: 64, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginBottom: 26 },
 });

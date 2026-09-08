@@ -13,15 +13,14 @@ export default function VehicleSelectionModal({ visible, selected, onClose, onSe
     <View style={styles.overlay}><Pressable accessibilityRole="button" accessibilityLabel="Close vehicle selection" style={StyleSheet.absoluteFill} onPress={onClose} />
       <View accessibilityViewIsModal style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24), maxHeight: '92%' }]}>
         <View style={styles.handle} /><ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.heading}><Text style={s.badge}>YOUR JOURNEY STARTS HERE</Text><Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={{ padding: 10 }}><Ionicons name="close" size={22} color="#fff" /></Pressable></View>
-        <Text style={s.title}>How will you deliver?</Text><Text style={s.subtitle}>Choose your vehicle to set up your driver profile.</Text>
+        <View style={[styles.heading, { justifyContent: 'flex-end' }]}><Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={{ padding: 10 }}><Ionicons name="close" size={22} color="#fff" /></Pressable></View>
+        <Text style={[s.title, { marginBottom: 24 }]}>How will you deliver?</Text>
         {VEHICLES.map(v => <Pressable key={v.id} accessibilityRole="radio" accessibilityState={{ checked: choice === v.id }} accessibilityLabel={`${v.title}, ${v.description}`} onPress={() => setChoice(v.id)} style={[styles.option, choice === v.id && styles.selected]}>
           <View style={[styles.vehicleIcon, choice === v.id && { backgroundColor: colors.limeGreen }]}><Ionicons name={v.icon} size={30} color={choice === v.id ? colors.deepNavy : '#fff'} /></View>
-          <View style={{ flex: 1 }}><Text style={styles.title}>{v.title}</Text><Text style={styles.description}>{v.description}</Text><Text style={styles.detail}>{v.detail}</Text></View>
+          <View style={{ flex: 1 }}><Text style={styles.title}>{v.title}</Text><Text style={styles.description}>{v.description}</Text></View>
           <Ionicons name={choice === v.id ? 'radio-button-on' : 'radio-button-off'} color={choice === v.id ? colors.limeGreen : '#777'} size={23} />
         </Pressable>)}
         <View style={{ marginTop: 14 }}><Button disabled={!choice} title={choice ? `Continue as ${choice}` : 'Choose your vehicle'} onPress={() => onSelect(choice)} /></View>
-        <Text style={[s.note, { marginTop: 16 }]}>You can change this before finishing registration.</Text>
       </ScrollView></View>
     </View>
   </Modal>;
