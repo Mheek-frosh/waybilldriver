@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button, Field, s } from '../components/DriverUI';
 import VehicleSelectionModal from '../components/VehicleSelectionModal';
 import BottomSheet from '../components/BottomSheet';
+import SuccessTick from '../components/SuccessTick';
 import { useDriverStore } from '../state/useDriverStore';
 import { validateStep, normalizePhone, VEHICLES } from '../utils/registration';
 import { normalizeEmail } from '../utils/email';
@@ -61,6 +62,7 @@ export default function RegistrationScreen({ navigation }) {
     <View style={s.footer}><Button title={done ? 'Verify details' : step === 3 ? 'Confirm my details' : 'Continue'} onPress={done ? verify : next} /><Text style={s.note}>{done ? 'Confirm your profile details to continue.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
     <BottomSheet visible={success} onClose={() => setSuccess(false)} showClose={false} showHandle={false}>
       <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+        <SuccessTick visible={success} pulse />
         <Text style={[s.badge, { marginTop: 16, marginBottom: 16 }]}>All set!</Text>
         <Text style={[s.title, { textAlign: 'center' }]}>Details confirmed.</Text>
         <Text style={[s.subtitle, { textAlign: 'center', marginBottom: 12 }]}>Welcome aboard, {draft.name.split(' ')[0]}.</Text>

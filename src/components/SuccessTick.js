@@ -3,7 +3,7 @@ import { AccessibilityInfo, Animated, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-export default function SuccessTick({ visible = true }) {
+export default function SuccessTick({ visible = true, pulse = false }) {
   const circle = useRef(new Animated.Value(0)).current;
   const tick = useRef(new Animated.Value(0)).current;
   const ripple = useRef(new Animated.Value(0)).current;
@@ -11,9 +11,11 @@ export default function SuccessTick({ visible = true }) {
   useEffect(() => {
     let disposed = false;
     let animation;
+    let pulseAnimation;
     const play = reduceMotion => {
       if (disposed) return;
       animation?.stop();
+      pulseAnimation?.stop();
       circle.setValue(reduceMotion ? 1 : 0);
       tick.setValue(reduceMotion ? 1 : 0);
       ripple.setValue(reduceMotion ? 1 : 0);
@@ -26,12 +28,20 @@ export default function SuccessTick({ visible = true }) {
           Animated.timing(ripple, { toValue: 1, duration: 650, useNativeDriver: true }),
         ]),
       ]);
-      animation.start();
+      animation.start(({ finished }) => {
+        if (!finished || disposed || !pulse) return;
+        pulseAnimation = Animated.loop(Animated.sequence([
+          Animated.timing(ripple, { toValue: 0, duration: 0, useNativeDriver: true, isInteraction: false }),
+          Animated.timing(ripple, { toValue: 1, duration: 1000, useNativeDriver: true, isInteraction: false }),
+          Animated.delay(450),
+        ]));
+        pulseAnimation.start();
+      });
     };
     if (visible) AccessibilityInfo.isReduceMotionEnabled().then(play).catch(() => play(false));
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', play);
-    return () => { disposed = true; animation?.stop(); subscription.remove(); };
-  }, [visible, circle, tick, ripple]);
+    return () => { disposed = true; animation?.stop(); pulseAnimation?.stop(); subscription.remove(); };
+  }, [visible, pulse, circle, tick, ripple]);
 
   return <View accessible accessibilityLabel="Success" style={styles.container}>
     <Animated.View style={[styles.ripple, { opacity: ripple.interpolate({ inputRange: [0, 1], outputRange: [.3, 0] }), transform: [{ scale: ripple.interpolate({ inputRange: [0, 1], outputRange: [.8, 1.4] }) }] }]} />
