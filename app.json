@@ -6,8 +6,26 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "ios": { "supportsTablet": true },
-    "android": { "package": "com.waybill.driver" },
-    "web": { "favicon": "./assets/favicon.png" }
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.waybill.driver"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cd37baa3-f7c0-45d6-8576-34932b18ac85"
+      }
+    },
+    "owner": "michaelusd",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/cd37baa3-f7c0-45d6-8576-34932b18ac85"
+    }
   }
 }

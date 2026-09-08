@@ -16,4 +16,6 @@ The dashboard includes Home, Earnings, Activity and Account tabs; an earnings ca
 
 This is a registration and driver dashboard frontend. Drafts, availability and sample earnings are stored in memory for the current session only. Verify details checks local form completeness, not identity. No SMS, email, authentication, document verification, server submission, real dispatch, live navigation, support messaging or payments are connected. The UI labels sample data and pending verification. Connect those services before enabling actual applications or deliveries. Nigerian phone numbers are supported in this first flow. The decorative delivery area is not a live map; the sample request uses Lagos addresses.
 
-Customer EAS project IDs, update URLs, credentials and customer booking screens were deliberately not copied. Configure a separate EAS project for this app before publishing.
+EAS is linked to `@michaelusd/waybill-driver` (project `cd37baa3-f7c0-45d6-8576-34932b18ac85`), separate from the customer app. `expo-updates` uses runtime version policy `appVersion`.
+
+Publish preview updates with `eas update --channel preview --environment preview --message "Describe changes"`. The preview build profile creates an internal Android APK using the preview channel. A compatible native build containing Expo Updates must be installed to receive these updates; create the initial Android build with `eas build --platform android --profile preview`. Production has its own channel.
