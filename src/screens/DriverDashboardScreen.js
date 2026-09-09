@@ -18,23 +18,28 @@ function Stat({ value, label, icon }) { return <View style={d.stat}><Ionicons na
 function MenuRow({ icon, title, description, onPress }) { return <Pressable accessibilityRole="button" onPress={onPress} style={d.menuRow}><View style={d.smallIcon}><Ionicons name={icon} color={LIME} size={22} /></View><View style={{ flex: 1 }}><Text style={d.bodyTitle}>{title}</Text>{description && <Text style={[d.small, { marginTop: 5 }]}>{description}</Text>}</View><Ionicons name="chevron-forward" color="#999" size={18} /></Pressable>; }
 function Route({ trip }) { return <View style={{ gap: 20, paddingVertical: 18 }}><View style={d.routeRow}><View style={d.pickupDot} /><View style={{ flex: 1 }}><Text style={d.eyebrow}>PICKUP</Text><Text style={d.routeText}>{trip.pickup}</Text></View></View><View style={d.routeRow}><View style={d.dropoffDot} /><View style={{ flex: 1 }}><Text style={d.eyebrow}>DROP-OFF</Text><Text style={d.routeText}>{trip.dropoff}</Text></View></View></View>; }
 
+// Driver workspace with local tabs; notifications use a separate navigation route.
+// Availability, sample delivery progress and earnings live in useDashboardStore.
 export default function DriverDashboardScreen({ navigation }) {
   const draft = useDriverStore(state => state.draft);
   const { online, trip, completed, dismissed, toggleOnline, dismissRequest, acceptRequest, advanceTrip } = useDashboardStore();
   const [tab, setTab] = useState('Home');
   const [sheet, setSheet] = useState('');
   const [period, setPeriod] = useState('Today');
+  // Only completed sample deliveries contribute to earnings in this session.
   const total = completed.reduce((sum, item) => sum + item.amount, 0);
   const firstName = draft.name.trim().split(/\s+/)[0] || 'Driver';
   const hasRequest = online && !trip && !dismissed && completed.length === 0;
   const switchTab = next => { setTab(next); setSheet(''); };
 
+  // Shared by Home and Earnings. Period labels currently use the same session data.
   const earningsCard = <View style={d.earningsCard}>
     <View style={d.cardTop}><View style={d.earningsLabel}><Ionicons name="wallet-outline" size={18} color="#01144E" /><Text style={d.darkLabel}>{period === 'Today' ? 'Today’s earnings' : 'This week’s earnings'}</Text></View><View style={d.samplePill}><Text style={d.sampleText}>DEMO</Text></View></View>
     <Text style={d.amount}>{money(total)}<Text style={{ fontSize: 23, fontWeight: '500' }}>.00</Text></Text>
     <View style={d.earningsBottom}><Text style={d.darkCaption}>{completed.length ? 'Nice work. Every delivery counts.' : 'A fresh start. Make it a good one.'}</Text><Pressable accessibilityRole="button" accessibilityLabel="View earnings breakdown" onPress={() => tab === 'Earnings' ? setSheet('breakdown') : switchTab('Earnings')} style={d.darkCircle}><Ionicons name="arrow-up-outline" size={21} color={LIME} /></Pressable></View>
   </View>;
 
+  // Reused for requests and active trips; the store guards pickup/completion transitions.
   const deliveryCard = <View style={d.card}>
     <View style={d.cardTop}><View style={d.chip}><View style={d.dot} /><Text style={d.link}>{trip ? 'DELIVERY IN PROGRESS' : 'NEW DELIVERY · SAMPLE'}</Text></View><Text style={d.small}>{draft.vehicleType}</Text></View>
     <View style={[d.cardTop, { marginTop: 20 }]}><Text style={d.fare}>{money((trip || SAMPLE_REQUEST).amount)}</Text><Text style={d.small}>{SAMPLE_REQUEST.distance} · {SAMPLE_REQUEST.duration}</Text></View>
@@ -46,6 +51,7 @@ export default function DriverDashboardScreen({ navigation }) {
   return <SafeAreaView style={s.page} edges={['top', 'left', 'right', 'bottom']}><View style={s.frame}>
     <View style={d.header}><Pressable accessibilityRole="button" accessibilityLabel="Open your account" onPress={() => switchTab('Account')} style={d.avatar}><Text style={d.avatarText}>{firstName[0].toUpperCase()}</Text></Pressable><View style={{ flex: 1 }}><Text style={d.eyebrow}>WAYBILL DRIVER</Text><Text style={d.greeting}>{tab === 'Home' ? `Hello, ${firstName}` : tab}</Text></View><IconButton icon="notifications-outline" label="Notifications" onPress={() => navigation.navigate('Notifications')} /></View>
     <ScrollView key={tab} showsVerticalScrollIndicator={false} contentContainerStyle={d.content}>
+      {/* Home: earnings, availability, delivery requests and quick actions. */}
       {tab === 'Home' && <>
         <View style={d.locationRow}><Ionicons name="location-outline" color="#ABABB2" size={15} /><Text style={d.small}>{draft.city || 'Your city'}</Text><Text style={[d.small, { marginLeft: 'auto' }]}>Driver preview</Text></View>
         {earningsCard}
@@ -67,6 +73,7 @@ export default function DriverDashboardScreen({ navigation }) {
         <View style={d.tip}><Ionicons name="sparkles-outline" size={21} color={LIME} /><Text style={d.tipText}>A smooth delivery starts with a quick vehicle check. You’ve got this.</Text></View>
       </>}
 
+      {/* Earnings: session totals and payout information, without real transactions. */}
       {tab === 'Earnings' && <>
         <Text style={d.pageTitle}>Every trip adds up.</Text><Text style={d.intro}>Keep track of what you make, all in one place.</Text>
         <View style={d.segment}>{['Today', 'This week'].map(item => <Pressable key={item} accessibilityRole="tab" accessibilityState={{ selected: period === item }} onPress={() => setPeriod(item)} style={[d.segmentItem, period === item && d.segmentSelected]}><Text style={d.bodyTitle}>{item}</Text></Pressable>)}</View>
@@ -77,6 +84,7 @@ export default function DriverDashboardScreen({ navigation }) {
         <Text style={[s.note, { marginTop: 20 }]}>Sample earnings from this session. No real payments are processed.</Text>
       </>}
 
+      {/* Activity: active delivery controls and completed sample receipts. */}
       {tab === 'Activity' && <>
         <Text style={d.pageTitle}>Your delivery log.</Text><Text style={d.intro}>From the first pickup to the final drop-off.</Text>
         {trip && <><Section title="In progress" />{deliveryCard}</>}
@@ -84,6 +92,7 @@ export default function DriverDashboardScreen({ navigation }) {
         {completed.length ? completed.map(item => <Pressable key={item.id} accessibilityRole="button" onPress={() => setSheet('receipt')} style={[d.card, { marginBottom: 14 }]}><View style={d.cardTop}><View style={d.smallIcon}><Ionicons name="checkmark" color={LIME} size={22} /></View><Text style={[d.bodyTitle, { flex: 1, marginLeft: 14 }]}>Delivery completed</Text><Text style={d.link}>{money(item.amount)}</Text></View><Route trip={item} /><Text style={d.small}>{item.id} · {item.duration} · Sample trip</Text></Pressable>) : <View style={[d.card, d.empty]}><Ionicons name="receipt-outline" color={LIME} size={36} /><Text style={d.bodyTitle}>Your first delivery awaits</Text><Text style={d.emptyText}>Completed deliveries and their earnings will appear here.</Text><Button title="Back to home" onPress={() => switchTab('Home')} /></View>}
       </>}
 
+      {/* Account: registered driver/vehicle details and pending verification. */}
       {tab === 'Account' && <>
         <View style={[d.card, { alignItems: 'center', gap: 12, paddingVertical: 30 }]}><View style={[d.avatar, { width: 70, height: 70, borderRadius: 25 }]}><Text style={[d.avatarText, { fontSize: 30 }]}>{firstName[0].toUpperCase()}</Text></View><Text style={d.sectionTitle}>{draft.name}</Text><Text style={d.small}>{draft.vehicleType} partner · {draft.city}</Text><View style={d.statusPill}><Text style={d.link}>Profile details confirmed</Text></View></View>
         <Section title="Your account" /><MenuRow icon="person-outline" title="Personal details" description="Name, city and contact information" onPress={() => setSheet('profile')} /><MenuRow icon="car-outline" title="My vehicle" description={`${draft.make} · ${draft.plate}`} onPress={() => setSheet('vehicle')} /><MenuRow icon="document-text-outline" title="Documents & verification" description="Identity verification pending" onPress={() => setSheet('documents')} /><MenuRow icon="wallet-outline" title="Wallet & payouts" onPress={() => setSheet('wallet')} />

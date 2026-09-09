@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { s } from '../components/DriverUI';
 import { useDriverStore } from '../state/useDriverStore';
 
+// Full-screen account updates; each card expands in place instead of opening a sheet.
 export default function NotificationsScreen({ navigation }) {
   const draft = useDriverStore(state => state.draft);
   const [expanded, setExpanded] = useState(null);
+  // Local preview notices derived from the profile, not a remote notification feed.
   const notifications = [
     { id: 'welcome', icon: 'checkmark-circle-outline', title: 'Welcome to Waybill', body: 'Your profile details are confirmed.', detail: `${draft.name} · ${draft.vehicleType} partner · ${draft.city}` },
     { id: 'verification', icon: 'document-text-outline', title: 'Complete your verification', body: 'Contact and documents pending.', detail: 'Contact verification, driver identity and vehicle registration are still required. Document upload coming soon.' },

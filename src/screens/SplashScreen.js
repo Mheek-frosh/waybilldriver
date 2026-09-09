@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '../theme/colors';
 
+// Branded launch screen shown briefly before driver onboarding.
 export default function SplashScreen({ navigation }) {
   const float = useRef(new Animated.Value(0)).current;
 
@@ -12,7 +13,9 @@ export default function SplashScreen({ navigation }) {
       Animated.timing(float, { toValue: 0, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
     ]));
     animation.start();
+    // Replace the route so Back cannot return to the splash screen.
     const timer = setTimeout(() => navigation.replace('Onboarding'), 3000);
+    // Stop both effects if the screen unmounts before the delay finishes.
     return () => { clearTimeout(timer); animation.stop(); };
   }, [navigation, float]);
 

@@ -11,18 +11,23 @@ import { validateStep, normalizePhone, VEHICLES } from '../utils/registration';
 import { normalizeEmail } from '../utils/email';
 const titles = ['Let’s stay in touch.', 'A little about you.', 'Meet your vehicle.', 'Looking good?'];
 const subtitles = ['Add your contact details to start your driver profile.', 'Help us put a name to the person behind the wheel.', 'Tell us what you’ll be delivering with.', 'Check your details before finishing your profile draft.'];
+// Four-step profile flow: contact, driver, vehicle, then editable review.
+// The shared draft preserves input while moving backward or changing vehicle type.
 export default function RegistrationScreen({ navigation }) {
   const { draft, update } = useDriverStore();
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
   const [modal, setModal] = useState(!draft.vehicleType);
+  // `done` shows the profile summary; `success` controls the final confirmation sheet.
   const [done, setDone] = useState(false);
   const [success, setSuccess] = useState(false);
+  // Checks form completeness only; identity and document verification remain pending.
   const verify = () => {
     const invalid = [0, 1, 2].map(i => validateStep(i, draft)).find(Boolean);
     if (invalid) { setError(invalid); setDone(false); setStep(3); return; }
     setSuccess(true);
   };
+  // Clear registration history so Back from the dashboard cannot reopen signup.
   const openDashboard = () => {
     setSuccess(false);
     navigation.reset({ index: 0, routes: [{ name: 'DriverDashboard' }] });
@@ -31,6 +36,7 @@ export default function RegistrationScreen({ navigation }) {
   const back = () => { Keyboard.dismiss(); setError(''); if (done) setDone(false); else if (step > 0) setStep(step - 1); else navigation.goBack(); };
   useEffect(() => { const sub = BackHandler.addEventListener('hardwareBackPress', () => { if (step > 0 || done) { back(); return true; } return false; }); return () => sub.remove(); }, [step, done]);
   const change = key => value => { update({ [key]: value }); setError(''); };
+  // Validate the current step, or all fields before accepting the review.
   const next = () => {
     const invalid = step === 3 ? [0, 1, 2].map(i => validateStep(i, draft)).find(Boolean) : validateStep(step, draft);
     if (invalid) { setError(invalid); return; }
@@ -60,6 +66,7 @@ export default function RegistrationScreen({ navigation }) {
       {!!error && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={{ color: '#FF9999', marginTop: 16, lineHeight: 21 }}>{error}</Text>}
     </ScrollView>
     <View style={s.footer}><Button title={done ? 'Verify details' : step === 3 ? 'Confirm my details' : 'Continue'} onPress={done ? verify : next} /><Text style={s.note}>{done ? 'Confirm your profile details to continue.' : 'Registration preview · Your account is not yet activated.'}</Text></View>
+    {/* Confirmation keeps the pulsing tick and a single dashboard action. */}
     <BottomSheet visible={success} onClose={() => setSuccess(false)} showClose={false} showHandle={false}>
       <View style={{ alignItems: 'center', paddingVertical: 12 }}>
         <SuccessTick visible={success} pulse />
