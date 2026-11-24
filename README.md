@@ -18,4 +18,6 @@ This is a registration and driver dashboard frontend. Drafts, availability and s
 
 EAS is linked to `@michaelusd/waybill-driver` (project `cd37baa3-f7c0-45d6-8576-34932b18ac85`), separate from the customer app. `expo-updates` uses runtime version policy `appVersion`.
 
+The project uses Expo SDK 58. App version `1.1.0` gives this SDK upgrade a new native runtime; existing SDK 57 builds must be rebuilt before receiving these updates. Publish production updates with `eas update --channel production --environment production --message "Describe changes"`.
+
 Publish preview updates with `eas update --channel preview --environment preview --message "Describe changes"`. The preview build profile creates an internal Android APK using the preview channel. A compatible native build containing Expo Updates must be installed to receive these updates; create the initial Android build with `eas build --platform android --profile preview`. Production has its own channel.
